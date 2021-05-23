@@ -7,11 +7,11 @@
     <version>0.0.1</version>
     <packaging>pom</packaging>
     <modules>
-        <module>api-gateway</module>
-        <module>config-server</module>
-        <module>service-registry</module>
-        <module>hystrix-dashboard</module>
-        <module>user-service</module>
+        <module>config-service</module>
+        <module>discovery-service</module>
+        <module>gateway-service</module>
+        <module>metrics-service</module>
         <module>post-service</module>
+        <module>user-service</module>
     </modules>
 </project>

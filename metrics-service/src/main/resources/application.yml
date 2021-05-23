@@ -1,0 +1,10 @@
+server:
+  port: 9294
+
+spring:
+  application:
+    name: METRICS-SERVICE
+
+hystrix:
+  dashboard:
+    proxy-stream-allow-list: "*"
