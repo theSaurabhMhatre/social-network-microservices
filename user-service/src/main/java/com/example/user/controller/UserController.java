@@ -8,8 +8,9 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping(value = "/v1/users")
 public class UserController {
 
-    @RequestMapping(method = RequestMethod.GET)
-    public String testFunction() {
+    @RequestMapping(value = "/health",
+            method = RequestMethod.GET)
+    public String health() {
         return "User service is up";
     }
 

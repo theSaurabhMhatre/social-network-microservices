@@ -8,8 +8,9 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping(value = "/v1/posts")
 public class PostController {
 
-    @RequestMapping(method = RequestMethod.GET)
-    public String testFunction() {
+    @RequestMapping(value = "/health",
+            method = RequestMethod.GET)
+    public String health() {
         return "Post service is up";
     }
 

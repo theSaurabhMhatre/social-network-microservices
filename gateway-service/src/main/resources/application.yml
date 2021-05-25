@@ -7,6 +7,15 @@ spring:
   cloud:
     gateway:
       routes:
+        - id: AUTH-SERVICE
+          uri: lb://AUTH-SERVICE
+          predicates:
+            - Path=/v1/auth/**
+          filters:
+            - name: CircuitBreaker
+              args:
+                name: AUTH-SERVICE
+                fallbackuri: forward:/v1/fallbacks/auth
         - id: USER-SERVICE
           uri: lb://USER-SERVICE
           predicates:
@@ -21,10 +30,10 @@ spring:
           predicates:
             - Path=/v1/posts/**
           filters:
-              - name: CircuitBreaker
-                args:
-                  name: POST-SERVICE
-                  fallbackuri: forward:/v1/fallbacks/posts
+            - name: CircuitBreaker
+              args:
+                name: POST-SERVICE
+                fallbackuri: forward:/v1/fallbacks/posts
 
 hystrix:
   command:

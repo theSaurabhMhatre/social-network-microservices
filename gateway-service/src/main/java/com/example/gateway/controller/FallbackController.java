@@ -5,18 +5,25 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/v1/fallbacks")
+@RequestMapping(value = "/v1/fallbacks")
 public class FallbackController {
 
-    @RequestMapping(method = RequestMethod.GET,
-            value = "/users")
-    public String userServiceFallbackMethod() {
-        return "User service is experiencing issues";
+    @RequestMapping(value = "/auth",
+            method = RequestMethod.GET)
+    public String authServiceFallbackMethod() {
+        return "Auth service is experiencing issues";
     }
-    @RequestMapping(method = RequestMethod.GET,
-            value = "/posts")
+
+    @RequestMapping(value = "/posts",
+            method = RequestMethod.GET)
     public String postServiceFallbackMethod() {
         return "Post service is experiencing issues";
+    }
+
+    @RequestMapping(value = "/users",
+            method = RequestMethod.GET)
+    public String userServiceFallbackMethod() {
+        return "User service is experiencing issues";
     }
 
 }
