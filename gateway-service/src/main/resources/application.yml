@@ -16,6 +16,7 @@ spring:
               args:
                 name: AUTH-SERVICE
                 fallbackuri: forward:/v1/fallbacks/auth
+            - name: AuthenticationFilter
         - id: USER-SERVICE
           uri: lb://USER-SERVICE
           predicates:
@@ -25,6 +26,7 @@ spring:
               args:
                 name: USER-SERVICE
                 fallbackuri: forward:/v1/fallbacks/users
+            - name: AuthenticationFilter
         - id: POST-SERVICE
           uri: lb://POST-SERVICE
           predicates:
@@ -34,6 +36,7 @@ spring:
               args:
                 name: POST-SERVICE
                 fallbackuri: forward:/v1/fallbacks/posts
+            - name: AuthenticationFilter
 
 hystrix:
   command:
@@ -48,3 +51,6 @@ management:
     web:
       exposure:
         include: hystrix.stream
+
+open:
+  routes: /v1/auth/login

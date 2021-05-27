@@ -1,8 +1,10 @@
 package com.example.auth.controller;
 
 import com.example.auth.model.dto.AuthDto;
+import com.example.auth.model.dto.UserDto;
 import com.example.auth.service.AuthService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -27,14 +29,14 @@ public class AuthController {
 
     @RequestMapping(value = "/login",
             method = RequestMethod.POST)
-    public String login(@RequestBody AuthDto authDto) {
-        return this.authService.login(authDto.getUserDto());
+    public String login(@RequestBody UserDto userDto) {
+        return authService.login(userDto);
     }
 
-    @RequestMapping(value = "/validate",
-            method = RequestMethod.POST)
-    public String validate(@RequestBody AuthDto authDto) {
-        return String.valueOf(this.authService.validate(authDto));
+    @RequestMapping(value = "/validate/{token}",
+            method = RequestMethod.GET)
+    public AuthDto validate(@PathVariable String token) {
+        return authService.validate(token);
     }
 
 }
