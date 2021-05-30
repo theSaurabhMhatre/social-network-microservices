@@ -53,4 +53,4 @@ management:
         include: hystrix.stream
 
 open:
-  routes: /v1/auth/login
+  routes: /v1/auth/login, /v1/auth/register

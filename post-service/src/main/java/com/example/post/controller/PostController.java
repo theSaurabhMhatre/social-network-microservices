@@ -1,5 +1,6 @@
 package com.example.post.controller;
 
+import com.example.commons.model.response.Response;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -10,8 +11,10 @@ public class PostController {
 
     @RequestMapping(value = "/health",
             method = RequestMethod.GET)
-    public String health() {
-        return "Post service is up";
+    public Response health() {
+        Response<String> response = Response.ok();
+        response.setData("Post service is up");
+        return response;
     }
 
 }

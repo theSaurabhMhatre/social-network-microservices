@@ -1,6 +1,6 @@
 package com.example.auth.utility;
 
-import com.example.auth.model.dto.AuthDto;
+import com.example.auth.model.dto.TokenDto;
 import com.example.auth.model.dto.UserDto;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -14,15 +14,14 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
+import static com.example.commons.constants.AuthConstants.Claims.REMOTE_ADDR;
+import static com.example.commons.constants.AuthConstants.Claims.USER_ID;
+
 @Component
 public class JWTUtility
         implements Serializable {
 
     private static final long serialVersionUID = 123456654321L;
-
-    private static final String ID = "id";
-
-    private static final String ROLE = "role";
 
     @Value(value = "${jwt.secret}")
     private String secretKey;
@@ -44,37 +43,34 @@ public class JWTUtility
                 .compact();
     }
 
-    public String generateToken(UserDto userDto) {
+    public String generateToken(UserDto userDto,
+                                String remote) {
         Map<String, Object> claims = new HashMap<>();
-        claims.put(ID, userDto.getId());
-        claims.put(ROLE, userDto.getRole());
+        claims.put(USER_ID, userDto.getId());
+        claims.put(REMOTE_ADDR, remote);
         return doGenerateToken(claims, userDto.getHandle());
     }
 
-
-    public String getSubjectFromToken(String token) {
-        return getClaimFromToken(token, Claims::getSubject);
-    }
-
-    public AuthDto validateToken(String token,
-                                 UserDto userDto) {
-        String id = getIdFromToken(token);
-        if (id.equals(userDto.getId()) &&
-                !isTokenExpired(token)) {
-            AuthDto authDto = new AuthDto();
-            authDto.setUserDto(userDto);
-            Map<String, Object> claims = new HashMap<>();
-            claims.put(ID, getIdFromToken(token));
-            claims.put(ROLE, getRoleFromToken(token));
-            authDto.setClaims(claims);
-            return authDto;
+    public TokenDto validateToken(String token,
+                                  String remote) throws Exception {
+        if (!isTokenExpired(token) &&
+                remote.equals(getRemoteAddressFromToken(token))) {
+            TokenDto tokenDto = new TokenDto();
+            Map<String, String> claims = Map.of(
+                    USER_ID, getUserIdFromToken(token),
+                    REMOTE_ADDR, getRemoteAddressFromToken(token)
+            );
+            tokenDto.setSubject(getSubjectFromToken(token));
+            tokenDto.setClaims(claims);
+            return tokenDto;
         } else {
-            // TODO: throw exception
-            return null;
+            // TODO: throw custom exception
+            throw new Exception();
         }
     }
 
-    private Claims getAllClaimsFromToken(String token) {
+    private Claims getAllClaimsFromToken(String token)
+            throws Exception {
         // TODO: throw exception if parsing fails
         return Jwts.parser()
                 .setSigningKey(secretKey)
@@ -83,31 +79,40 @@ public class JWTUtility
     }
 
     private <T> T getClaimFromToken(String token,
-                                    Function<Claims, T> claimsResolver) {
+                                    Function<Claims, T> claimsResolver) throws Exception {
         final Claims claims = getAllClaimsFromToken(token);
         return claimsResolver.apply(claims);
     }
 
     private <T> T getClaimFromToken(String token,
                                     String key,
-                                    Class<T> clazz) {
+                                    Class<T> clazz) throws Exception {
         final Claims claims = getAllClaimsFromToken(token);
         return claims.get(key, clazz);
     }
 
-    private Date getExpirationDateFromToken(String token) {
+    private String getSubjectFromToken(String token)
+            throws Exception {
+        return getClaimFromToken(token, Claims::getSubject);
+    }
+
+    private Date getExpirationDateFromToken(String token)
+            throws Exception {
         return getClaimFromToken(token, Claims::getExpiration);
     }
 
-    private String getIdFromToken(String token) {
-        return getClaimFromToken(token, ID, String.class);
+    private String getUserIdFromToken(String token)
+            throws Exception {
+        return getClaimFromToken(token, USER_ID, String.class);
     }
 
-    private String getRoleFromToken(String token) {
-        return getClaimFromToken(token, ROLE, String.class);
+    private String getRemoteAddressFromToken(String token)
+            throws Exception {
+        return getClaimFromToken(token, REMOTE_ADDR, String.class);
     }
 
-    private Boolean isTokenExpired(String token) {
+    private Boolean isTokenExpired(String token)
+            throws Exception {
         final Date expirationDate = getExpirationDateFromToken(token);
         return expirationDate.before(new Date());
     }

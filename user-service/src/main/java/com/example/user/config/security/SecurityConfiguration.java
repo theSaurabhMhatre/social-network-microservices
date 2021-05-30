@@ -9,6 +9,8 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import static com.example.commons.constants.AuthConstants.ALLOWED_ROLE;
+
 @Configuration
 @EnableWebSecurity
 public class SecurityConfiguration
@@ -16,9 +18,17 @@ public class SecurityConfiguration
 
     private JWTFilter jwtFilter;
 
+    private SecurityHandlers.AuthenticationEntryPointHandler authenticationHandler;
+
+    private SecurityHandlers.CustomAccessDeniedHandler accessHandler;
+
     @Autowired
-    public SecurityConfiguration(JWTFilter jwtFilter) {
+    public SecurityConfiguration(JWTFilter jwtFilter,
+                                 SecurityHandlers.AuthenticationEntryPointHandler authenticationHandler,
+                                 SecurityHandlers.CustomAccessDeniedHandler accessHandler) {
         this.jwtFilter = jwtFilter;
+        this.authenticationHandler = authenticationHandler;
+        this.accessHandler = accessHandler;
     }
 
     @Override
@@ -27,8 +37,14 @@ public class SecurityConfiguration
                 .csrf()
                 .disable()
                 .authorizeRequests()
+                .antMatchers("/**")
+                .hasRole(ALLOWED_ROLE)
                 .anyRequest()
                 .authenticated()
+                .and()
+                .exceptionHandling()
+                .authenticationEntryPoint(authenticationHandler)
+                .accessDeniedHandler(accessHandler)
                 .and()
                 .sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS);

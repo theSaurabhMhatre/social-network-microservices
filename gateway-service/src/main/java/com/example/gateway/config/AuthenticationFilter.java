@@ -1,18 +1,30 @@
 package com.example.gateway.config;
 
-import com.example.gateway.model.dto.AuthDto;
+import com.example.commons.model.response.Response;
+import com.example.commons.utility.ConversionUtils;
+import com.example.gateway.model.dto.UserDto;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.gateway.filter.GatewayFilter;
 import org.springframework.cloud.gateway.filter.factory.AbstractGatewayFilterFactory;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.http.server.reactive.ServerHttpResponse;
 import org.springframework.stereotype.Component;
+import org.springframework.util.ObjectUtils;
+import org.springframework.util.StringUtils;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 
 import java.util.Map;
+
+import static com.example.commons.constants.AuthConstants.AUTHORIZATION_HEADER;
+import static com.example.commons.constants.AuthConstants.AUTH_REALM;
+import static com.example.commons.constants.AuthConstants.USER_DATA;
 
 @Component
 public class AuthenticationFilter
@@ -21,16 +33,6 @@ public class AuthenticationFilter
     private final RestTemplate restTemplate;
 
     private final RouteValidator routeValidator;
-
-    private static final String ID = "id";
-
-    private static final String ROLE = "role";
-
-    private static final String PASSWORD = "password";
-
-    private static final String BEARER_REALM = "Bearer ";
-
-    private static final String AUTHORIZATION_HEADER = "Authorization";
 
     private static final String AUTHORIZATION_HEADER_MISSING = "Authorization header is missing";
 
@@ -49,21 +51,46 @@ public class AuthenticationFilter
         return (exchange, chain) -> {
             ServerHttpRequest request = exchange.getRequest();
             if (routeValidator.isSecured.test(request)) {
-                String authorizationHeader;
-                if (isAuthMissing(request) ||
-                        !(authorizationHeader = getAuthHeader(request)).startsWith(BEARER_REALM)) {
+                String authorizationHeader = null;
+                if (StringUtils.isEmpty(authorizationHeader = getHeader(request, AUTHORIZATION_HEADER)) ||
+                        !(authorizationHeader.startsWith(AUTH_REALM))) {
                     return onError(exchange, HttpStatus.UNAUTHORIZED, AUTHORIZATION_HEADER_MISSING);
                 }
-                String token = authorizationHeader.substring(BEARER_REALM.length());
-                String url = String.format("http://auth-service/v1/auth/validate/%s", token);
-                AuthDto authDto = restTemplate.getForObject(url, AuthDto.class);
-                if (authDto == null) {
-                    return onError(exchange, HttpStatus.UNAUTHORIZED, AUTHORIZATION_HEADER_INVALID);
+                String token = authorizationHeader.substring(AUTH_REALM.length());
+                try {
+                    UserDto userDto = validateRequest(token, request.getHeaders());
+                    if (ObjectUtils.isEmpty(userDto)) {
+                        return onError(exchange, HttpStatus.UNAUTHORIZED, AUTHORIZATION_HEADER_INVALID);
+                    }
+                    addUserDataHeader(exchange, userDto);
+                } catch (IllegalArgumentException e) {
+                    // TODO: handle this
+                } catch (JsonProcessingException e) {
+                    // TODO: handle this
                 }
-                populateRequestWithHeaders(exchange, authDto);
             }
             return chain.filter(exchange);
         };
+    }
+
+    private String getHeader(ServerHttpRequest request,
+                             String key) {
+        return request.getHeaders()
+                .getOrEmpty(key)
+                .get(0);
+    }
+
+    private UserDto validateRequest(String token,
+                                    HttpHeaders headers) throws IllegalArgumentException {
+        String url = "http://auth-service/v1/auth/validate/{token}";
+        Map<String, String> variables = Map.of("token", token);
+        Response<UserDto> response = restTemplate
+                .exchange(url, HttpMethod.GET, new HttpEntity<>(headers), Response.class, variables)
+                .getBody();
+        if (response.getStatus().equals(HttpStatus.OK)) {
+            return ConversionUtils.convert(response.getData(), UserDto.class);
+        }
+        return null;
     }
 
     private Mono<Void> onError(ServerWebExchange exchange,
@@ -74,25 +101,12 @@ public class AuthenticationFilter
         return response.setComplete();
     }
 
-    private String getAuthHeader(ServerHttpRequest request) {
-        return request.getHeaders()
-                .getOrEmpty(AUTHORIZATION_HEADER)
-                .get(0);
-    }
-
-    private Boolean isAuthMissing(ServerHttpRequest request) {
-        return !request.getHeaders()
-                .containsKey(AUTHORIZATION_HEADER);
-    }
-
-    private void populateRequestWithHeaders(ServerWebExchange exchange,
-                                            AuthDto authDto) {
-        Map<String, Object> claims = authDto.getClaims();
+    private void addUserDataHeader(ServerWebExchange exchange,
+                                   UserDto userDto) throws JsonProcessingException {
+        String userContents = ConversionUtils.serialize(userDto);
         exchange.getRequest()
                 .mutate()
-                .header(ID, String.valueOf(claims.get(ID)))
-                .header(ROLE, String.valueOf(claims.get(ROLE)))
-                .header(PASSWORD, authDto.getUserDto().getPassword())
+                .header(USER_DATA, userContents)
                 .build();
     }
 

@@ -4,13 +4,15 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Map;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class AuthDto {
+public class TokenDto {
 
-    private String token;
+    private String subject;
 
-    private UserDto userDto;
+    private Map<String, String> claims;
 
 }
