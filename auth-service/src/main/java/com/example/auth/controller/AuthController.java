@@ -1,8 +1,8 @@
 package com.example.auth.controller;
 
-import com.example.auth.model.dto.UserDto;
 import com.example.auth.service.AuthService;
-import com.example.commons.model.response.Response;
+import com.example.data.model.dto.auth.AccountDto;
+import com.example.data.model.response.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -33,10 +33,10 @@ public class AuthController {
 
     @RequestMapping(value = "/login",
             method = RequestMethod.POST)
-    public Response login(@RequestBody UserDto userDto,
+    public Response login(@RequestBody AccountDto accountDto,
                           HttpServletRequest httpServletRequest) {
         Response<String> response = Response.ok();
-        response.setData(authService.login(userDto, httpServletRequest.getRemoteAddr()));
+        response.setData(authService.login(accountDto, httpServletRequest.getRemoteAddr()));
         return response;
     }
 
@@ -44,7 +44,7 @@ public class AuthController {
             method = RequestMethod.GET)
     public Response validate(@PathVariable String token,
                              HttpServletRequest httpServletRequest) {
-        Response<UserDto> response = Response.ok();
+        Response<AccountDto> response = Response.ok();
         response.setData(authService.validate(token, httpServletRequest.getRemoteAddr()));
         return response;
     }

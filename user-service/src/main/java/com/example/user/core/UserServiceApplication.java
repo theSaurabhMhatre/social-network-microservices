@@ -8,8 +8,10 @@ import org.springframework.context.annotation.ComponentScan;
 
 @EnableEurekaClient
 @SpringBootApplication
-@EntityScan(basePackages = {"com.example.user.*"})
-@ComponentScan(basePackages = {"com.example.user.*"})
+@EntityScan(basePackages = {"com.example.user.*",
+        "com.example.persistence.*"})
+@ComponentScan(basePackages = {"com.example.user.*",
+        "com.example.persistence.*"})
 public class UserServiceApplication {
 
     public static void main(String[] args) {

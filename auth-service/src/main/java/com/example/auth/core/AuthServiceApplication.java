@@ -8,8 +8,10 @@ import org.springframework.context.annotation.ComponentScan;
 
 @EnableEurekaClient
 @SpringBootApplication
-@EntityScan(basePackages = {"com.example.auth.*"})
-@ComponentScan(basePackages = {"com.example.auth.*"})
+@EntityScan(basePackages = {"com.example.auth.*",
+        "com.example.persistence.*"})
+@ComponentScan(basePackages = {"com.example.auth.*",
+        "com.example.persistence.*"})
 public class AuthServiceApplication {
 
     public static void main(String[] args) {

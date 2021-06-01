@@ -1,7 +1,7 @@
 package com.example.user.controller;
 
-import com.example.commons.model.response.Response;
-import com.example.user.model.dto.UserDto;
+import com.example.data.model.dto.auth.AccountDto;
+import com.example.data.model.response.Response;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -22,16 +22,21 @@ public class UserController {
     @RequestMapping(value = "/random",
             method = RequestMethod.GET)
     public Response testFunction() {
-        Response<UserDto> response = Response.ok();
-        response.setData(new UserDto("123", "demo", "pass", "USER"));
+        Response<AccountDto> response = Response.ok();
+        AccountDto accountDto = AccountDto.builder()
+                .id("123")
+                .handle("demo")
+                .password("pass")
+                .build();
+        response.setData(accountDto);
         return response;
     }
 
     @RequestMapping(value = "/test",
             method = RequestMethod.GET)
-    public Response testFunction(@RequestHeader("User") String user) {
+    public Response testFunction(@RequestHeader("Account") String account) {
         Response<String> response = Response.ok();
-        response.setData(String.format("USER: %s", user));
+        response.setData(String.format("ACCOUNT: %s", account));
         return response;
     }
 

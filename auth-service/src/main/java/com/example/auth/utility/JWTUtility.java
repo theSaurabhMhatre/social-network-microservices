@@ -1,7 +1,7 @@
 package com.example.auth.utility;
 
-import com.example.auth.model.dto.TokenDto;
-import com.example.auth.model.dto.UserDto;
+import com.example.data.model.dto.auth.AccountDto;
+import com.example.data.model.dto.auth.TokenDto;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -14,8 +14,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
-import static com.example.commons.constants.AuthConstants.Claims.REMOTE_ADDR;
-import static com.example.commons.constants.AuthConstants.Claims.USER_ID;
+import static com.example.data.model.constant.AuthConstants.Claims.REMOTE_ADDR;
+import static com.example.data.model.constant.AuthConstants.Claims.ACCOUNT_ID;
 
 @Component
 public class JWTUtility
@@ -43,12 +43,12 @@ public class JWTUtility
                 .compact();
     }
 
-    public String generateToken(UserDto userDto,
+    public String generateToken(AccountDto accountDto,
                                 String remote) {
         Map<String, Object> claims = new HashMap<>();
-        claims.put(USER_ID, userDto.getId());
+        claims.put(ACCOUNT_ID, accountDto.getId());
         claims.put(REMOTE_ADDR, remote);
-        return doGenerateToken(claims, userDto.getHandle());
+        return doGenerateToken(claims, accountDto.getHandle());
     }
 
     public TokenDto validateToken(String token,
@@ -57,7 +57,7 @@ public class JWTUtility
                 remote.equals(getRemoteAddressFromToken(token))) {
             TokenDto tokenDto = new TokenDto();
             Map<String, String> claims = Map.of(
-                    USER_ID, getUserIdFromToken(token),
+                    ACCOUNT_ID, getAccountIdFromToken(token),
                     REMOTE_ADDR, getRemoteAddressFromToken(token)
             );
             tokenDto.setSubject(getSubjectFromToken(token));
@@ -101,9 +101,9 @@ public class JWTUtility
         return getClaimFromToken(token, Claims::getExpiration);
     }
 
-    private String getUserIdFromToken(String token)
+    private String getAccountIdFromToken(String token)
             throws Exception {
-        return getClaimFromToken(token, USER_ID, String.class);
+        return getClaimFromToken(token, ACCOUNT_ID, String.class);
     }
 
     private String getRemoteAddressFromToken(String token)

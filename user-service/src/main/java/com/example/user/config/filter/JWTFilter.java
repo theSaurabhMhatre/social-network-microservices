@@ -1,7 +1,8 @@
 package com.example.user.config.filter;
 
-import com.example.commons.utility.ConversionUtils;
-import com.example.user.model.dto.UserDto;
+import com.example.data.model.dto.auth.AccountDto;
+import com.example.data.model.dto.auth.RoleDto;
+import com.example.data.utility.ConversionUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
@@ -10,6 +11,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
+import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -23,36 +25,34 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import static com.example.commons.constants.AuthConstants.AUTHORIZATION_HEADER;
-import static com.example.commons.constants.AuthConstants.USER_DATA;
+import static com.example.data.model.constant.AuthConstants.ACCOUNT_DATA;
+import static com.example.data.model.constant.AuthConstants.AUTHORIZATION_HEADER;
 
 @Component
 public class JWTFilter
         extends OncePerRequestFilter {
 
-    private static final String ROLE_PREFIX = "ROLE_";
-
     @Override
     protected void doFilterInternal(HttpServletRequest httpServletRequest,
                                     HttpServletResponse httpServletResponse,
                                     FilterChain filterChain) throws ServletException, IOException {
-        UserDto userDto = getUserFromHeader(httpServletRequest);
+        AccountDto accountDto = getAccountFromHeader(httpServletRequest);
         String auth = httpServletRequest.getHeader(AUTHORIZATION_HEADER);
         if (!StringUtils.isEmpty(auth) &&
-                !StringUtils.isEmpty(userDto.getId()) &&
-                !StringUtils.isEmpty(userDto.getPassword()) &&
-                !StringUtils.isEmpty(userDto.getRole())) {
-            var token = getAuthenticationToken(auth, userDto);
+                !StringUtils.isEmpty(accountDto.getId()) &&
+                !StringUtils.isEmpty(accountDto.getPassword()) &&
+                !ObjectUtils.isEmpty(accountDto.getRoles())) {
+            var token = getAuthenticationToken(auth, accountDto);
             token.setDetails(new WebAuthenticationDetailsSource().buildDetails(httpServletRequest));
             SecurityContextHolder.getContext().setAuthentication(token);
         }
         filterChain.doFilter(httpServletRequest, httpServletResponse);
     }
 
-    private UserDto getUserFromHeader(HttpServletRequest httpServletRequest) {
-        String userContents = httpServletRequest.getHeader(USER_DATA);
+    private AccountDto getAccountFromHeader(HttpServletRequest httpServletRequest) {
+        String accountContent = httpServletRequest.getHeader(ACCOUNT_DATA);
         try {
-            return ConversionUtils.deserialize(userContents, UserDto.class);
+            return ConversionUtils.deserialize(accountContent, AccountDto.class);
         } catch (JsonProcessingException e) {
             // TODO: handle this
             return null;
@@ -60,19 +60,19 @@ public class JWTFilter
     }
 
     private UsernamePasswordAuthenticationToken getAuthenticationToken(String credentials,
-                                                                       UserDto userDto) {
-        List<String> roles = List.of(userDto.getRole());
-        var userDetails = new User(userDto.getId(), userDto.getPassword(), getUserAuthorities(roles));
+                                                                       AccountDto accountDto) {
+        List<GrantedAuthority> roles = getUserAuthorities(accountDto.getRoles());
+        var userDetails = new User(accountDto.getId(), accountDto.getPassword(), roles);
         var token = new UsernamePasswordAuthenticationToken(userDetails, credentials, userDetails.getAuthorities());
         return token;
     }
 
-    private List<GrantedAuthority> getUserAuthorities(List<String> roles) {
+    private List<GrantedAuthority> getUserAuthorities(Set<RoleDto> roles) {
         Set<GrantedAuthority> authorities = new HashSet<>();
         roles.forEach((role) -> {
-            authorities.add(new SimpleGrantedAuthority(ROLE_PREFIX + role));
+            authorities.add(new SimpleGrantedAuthority(role.getRole()));
         });
-        return new ArrayList<GrantedAuthority>(authorities);
+        return new ArrayList<>(authorities);
     }
 
 }
