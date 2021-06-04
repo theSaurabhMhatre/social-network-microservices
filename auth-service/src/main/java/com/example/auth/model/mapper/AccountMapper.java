@@ -16,8 +16,20 @@ public class AccountMapper {
                         .stream()
                         .map((role) -> {
                             return RoleMapper.toRoleDto(role);
-                        })
-                        .collect(Collectors.toSet()))
+                        }).collect(Collectors.toSet()))
+                .build();
+    }
+
+    public static Account toAccount(AccountDto accountDto) {
+        return Account.builder()
+                .id(accountDto.getId())
+                .handle(accountDto.getHandle())
+                .password(accountDto.getPassword())
+                .roles(accountDto.getRoles()
+                        .stream()
+                        .map((roleDto) -> {
+                            return RoleMapper.toRole(roleDto);
+                        }).collect(Collectors.toSet()))
                 .build();
     }
 

@@ -3,6 +3,7 @@ package com.example.auth.utility;
 import com.example.data.model.dto.auth.AccountDto;
 import com.example.data.model.dto.auth.TokenDto;
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.beans.factory.annotation.Value;
@@ -14,8 +15,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
-import static com.example.data.model.constant.AuthConstants.Claims.REMOTE_ADDR;
+import static com.example.data.model.constant.AuthConstants.ACCESS_TOKEN_EXPIRATION;
 import static com.example.data.model.constant.AuthConstants.Claims.ACCOUNT_ID;
+import static com.example.data.model.constant.AuthConstants.Claims.REMOTE_ADDR;
 
 @Component
 public class JWTUtility
@@ -26,21 +28,18 @@ public class JWTUtility
     @Value(value = "${jwt.secret}")
     private String secretKey;
 
-    @Value(value = "${jwt.expiration}")
-    private String expirationTime;
-
     private String doGenerateToken(Map<String, Object> claims,
                                    String subject) {
-        long expirationTimeValue = Long.parseLong(expirationTime);
         final Date createdDate = new Date();
-        final Date expirationDate = new Date(createdDate.getTime() + expirationTimeValue * 1000);
-        return Jwts.builder()
+        final Date expirationDate = new Date(createdDate.getTime() + ACCESS_TOKEN_EXPIRATION * 1000);
+        final String token = Jwts.builder()
                 .setClaims(claims)
                 .setSubject(subject)
                 .setIssuedAt(createdDate)
                 .setExpiration(expirationDate)
                 .signWith(SignatureAlgorithm.HS512, secretKey)
                 .compact();
+        return token;
     }
 
     public String generateToken(AccountDto accountDto,
@@ -55,13 +54,14 @@ public class JWTUtility
                                   String remote) throws Exception {
         if (!isTokenExpired(token) &&
                 remote.equals(getRemoteAddressFromToken(token))) {
-            TokenDto tokenDto = new TokenDto();
             Map<String, String> claims = Map.of(
                     ACCOUNT_ID, getAccountIdFromToken(token),
                     REMOTE_ADDR, getRemoteAddressFromToken(token)
             );
-            tokenDto.setSubject(getSubjectFromToken(token));
-            tokenDto.setClaims(claims);
+            TokenDto tokenDto = TokenDto.builder()
+                    .subject(getSubjectFromToken(token))
+                    .claims(claims)
+                    .build();
             return tokenDto;
         } else {
             // TODO: throw custom exception
@@ -69,13 +69,25 @@ public class JWTUtility
         }
     }
 
+    public Boolean validateClaims(ExpiredJwtException expiredJwtException,
+                                  Map<String, Object> claims) {
+        Claims trueClaims = expiredJwtException.getClaims();
+        for (Map.Entry<String, Object> claim : claims.entrySet()) {
+            Object trueClaim = trueClaims.get(claim.getKey(), claim.getValue().getClass());
+            if (!trueClaim.equals(claim.getValue())) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     private Claims getAllClaimsFromToken(String token)
             throws Exception {
-        // TODO: throw exception if parsing fails
-        return Jwts.parser()
+        Claims claims = Jwts.parser()
                 .setSigningKey(secretKey)
                 .parseClaimsJws(token)
                 .getBody();
+        return claims;
     }
 
     private <T> T getClaimFromToken(String token,

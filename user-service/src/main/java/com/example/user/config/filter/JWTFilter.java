@@ -27,6 +27,7 @@ import java.util.Set;
 
 import static com.example.data.model.constant.AuthConstants.ACCOUNT_DATA;
 import static com.example.data.model.constant.AuthConstants.AUTHORIZATION_HEADER;
+import static com.example.data.model.constant.AuthConstants.MASKED_PASSWORD;
 
 @Component
 public class JWTFilter
@@ -37,12 +38,11 @@ public class JWTFilter
                                     HttpServletResponse httpServletResponse,
                                     FilterChain filterChain) throws ServletException, IOException {
         AccountDto accountDto = getAccountFromHeader(httpServletRequest);
-        String auth = httpServletRequest.getHeader(AUTHORIZATION_HEADER);
-        if (!StringUtils.isEmpty(auth) &&
+        String authHeader = httpServletRequest.getHeader(AUTHORIZATION_HEADER);
+        if (!StringUtils.isEmpty(authHeader) &&
                 !StringUtils.isEmpty(accountDto.getId()) &&
-                !StringUtils.isEmpty(accountDto.getPassword()) &&
                 !ObjectUtils.isEmpty(accountDto.getRoles())) {
-            var token = getAuthenticationToken(auth, accountDto);
+            var token = getAuthenticationToken(authHeader, accountDto);
             token.setDetails(new WebAuthenticationDetailsSource().buildDetails(httpServletRequest));
             SecurityContextHolder.getContext().setAuthentication(token);
         }
@@ -62,7 +62,7 @@ public class JWTFilter
     private UsernamePasswordAuthenticationToken getAuthenticationToken(String credentials,
                                                                        AccountDto accountDto) {
         List<GrantedAuthority> roles = getUserAuthorities(accountDto.getRoles());
-        var userDetails = new User(accountDto.getId(), accountDto.getPassword(), roles);
+        var userDetails = new User(accountDto.getId(), MASKED_PASSWORD, roles);
         var token = new UsernamePasswordAuthenticationToken(userDetails, credentials, userDetails.getAuthorities());
         return token;
     }

@@ -1,16 +1,15 @@
 package com.example.auth.model.entity;
 
 import com.example.persistence.generator.NamedSequenceGenerator;
-import com.example.persistence.model.entity.Updatable;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.EntityListeners;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -23,12 +22,12 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity(name = "Account")
 @Table(name = "table_account")
-@EqualsAndHashCode(callSuper = false)
-@EntityListeners(value = {AuditingEntityListener.class})
-public class Account
-        extends Updatable {
+public class Account {
 
     @Id
     @Column(name = "id")
