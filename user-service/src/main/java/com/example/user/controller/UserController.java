@@ -13,7 +13,7 @@ public class UserController {
 
     @RequestMapping(value = "/health",
             method = RequestMethod.GET)
-    public Response health() {
+    public Response<String> health() {
         Response<String> response = Response.ok();
         response.setData("User service is up");
         return response;
@@ -21,9 +21,10 @@ public class UserController {
 
     @RequestMapping(value = "/random",
             method = RequestMethod.GET)
-    public Response testFunction() {
+    public Response<AccountDto> testFunction() {
         Response<AccountDto> response = Response.ok();
-        AccountDto accountDto = AccountDto.builder()
+        AccountDto accountDto = AccountDto
+                .builder()
                 .id("123")
                 .handle("demo")
                 .password("pass")
@@ -34,7 +35,8 @@ public class UserController {
 
     @RequestMapping(value = "/test",
             method = RequestMethod.GET)
-    public Response testFunction(@RequestHeader("Account") String account) {
+    public Response<String> testFunction(
+            @RequestHeader("Account") String account) {
         Response<String> response = Response.ok();
         response.setData(String.format("ACCOUNT: %s", account));
         return response;

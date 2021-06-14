@@ -13,21 +13,23 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 
 @RestController
 @RequestMapping(value = "/v1/auth")
 public class AuthController {
 
-    private IAuthService authService;
+    private final IAuthService authService;
 
     @Autowired
-    public AuthController(AuthService authService) {
+    public AuthController(
+            AuthService authService) {
         this.authService = authService;
     }
 
     @RequestMapping(value = "/health",
             method = RequestMethod.GET)
-    public Response health() {
+    public Response<String> health() {
         Response<String> response = Response.ok();
         response.setData("Auth service is up");
         return response;
@@ -35,7 +37,8 @@ public class AuthController {
 
     @RequestMapping(value = "/register",
             method = RequestMethod.POST)
-    public Response register(@RequestBody AccountDto accountDto) {
+    public Response<AccountDto> register(
+            @Valid @RequestBody AccountDto accountDto) {
         Response<AccountDto> response = Response.ok();
         response.setData(authService.register(accountDto));
         return response;
@@ -43,8 +46,9 @@ public class AuthController {
 
     @RequestMapping(value = "/login",
             method = RequestMethod.POST)
-    public Response login(@RequestBody AccountDto accountDto,
-                          HttpServletRequest httpServletRequest) {
+    public Response<TokenPairDto> login(
+            @Valid @RequestBody AccountDto accountDto,
+            HttpServletRequest httpServletRequest) {
         Response<TokenPairDto> response = Response.ok();
         response.setData(authService.login(accountDto, httpServletRequest.getRemoteAddr()));
         return response;
@@ -52,8 +56,9 @@ public class AuthController {
 
     @RequestMapping(value = "/validate/{token}",
             method = RequestMethod.GET)
-    public Response validate(@PathVariable String token,
-                             HttpServletRequest httpServletRequest) throws Exception {
+    public Response<AccountDto> validate(
+            @PathVariable String token,
+            HttpServletRequest httpServletRequest) {
         Response<AccountDto> response = Response.ok();
         response.setData(authService.validate(token, httpServletRequest.getRemoteAddr()));
         return response;
@@ -61,8 +66,9 @@ public class AuthController {
 
     @RequestMapping(value = "/refresh",
             method = RequestMethod.GET)
-    public Response refresh(@RequestBody TokenPairDto tokenPairDto,
-                            HttpServletRequest httpServletRequest) throws Exception {
+    public Response<TokenPairDto> refresh(
+            @Valid @RequestBody TokenPairDto tokenPairDto,
+            HttpServletRequest httpServletRequest) {
         Response<TokenPairDto> response = Response.ok();
         response.setData(authService.refresh(tokenPairDto, httpServletRequest.getRemoteAddr()));
         return response;

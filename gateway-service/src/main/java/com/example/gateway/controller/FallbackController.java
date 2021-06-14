@@ -11,7 +11,7 @@ public class FallbackController {
 
     @RequestMapping(value = "/auth",
             method = RequestMethod.GET)
-    public Response authServiceFallbackMethod() {
+    public Response<String> authServiceFallbackMethod() {
         Response<String> response = Response.ok();
         response.setData("Auth service is experiencing issues");
         return response;
@@ -19,7 +19,7 @@ public class FallbackController {
 
     @RequestMapping(value = "/posts",
             method = RequestMethod.GET)
-    public Response postServiceFallbackMethod() {
+    public Response<String> postServiceFallbackMethod() {
         Response<String> response = Response.ok();
         response.setData("Post service is experiencing issues");
         return response;
@@ -27,7 +27,7 @@ public class FallbackController {
 
     @RequestMapping(value = "/users",
             method = RequestMethod.GET)
-    public Response userServiceFallbackMethod() {
+    public Response<String> userServiceFallbackMethod() {
         Response<String> response = Response.ok();
         response.setData("User service is experiencing issues");
         return response;

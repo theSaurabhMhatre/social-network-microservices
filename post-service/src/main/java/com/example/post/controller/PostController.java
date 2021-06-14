@@ -11,7 +11,7 @@ public class PostController {
 
     @RequestMapping(value = "/health",
             method = RequestMethod.GET)
-    public Response health() {
+    public Response<String> health() {
         Response<String> response = Response.ok();
         response.setData("Post service is up");
         return response;

@@ -9,8 +9,8 @@ public interface IAuthService {
 
     TokenPairDto login(AccountDto accountDto, String remote);
 
-    AccountDto validate(String token, String remote) throws Exception;
+    AccountDto validate(String token, String remote);
 
-    TokenPairDto refresh(TokenPairDto tokenPairDto, String remote) throws Exception;
+    TokenPairDto refresh(TokenPairDto tokenPairDto, String remote);
 
 }

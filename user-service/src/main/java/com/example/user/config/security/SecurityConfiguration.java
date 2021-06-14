@@ -23,15 +23,17 @@ import static com.example.data.model.constant.AuthConstants.ALLOWED_ROLE;
 public class SecurityConfiguration
         extends WebSecurityConfigurerAdapter {
 
-    private JWTFilter jwtFilter;
+    private final JWTFilter jwtFilter;
 
     @Autowired
-    public SecurityConfiguration(JWTFilter jwtFilter) {
+    public SecurityConfiguration(
+            JWTFilter jwtFilter) {
         this.jwtFilter = jwtFilter;
     }
 
     @Override
-    protected void configure(HttpSecurity httpSecurity) throws Exception {
+    protected void configure(HttpSecurity httpSecurity)
+            throws Exception {
         httpSecurity
                 .csrf()
                 .disable()
@@ -43,11 +45,11 @@ public class SecurityConfiguration
                 .and()
                 .exceptionHandling()
                 .authenticationEntryPoint((httpServletRequest, httpServletResponse, e) -> {
-                    Response<ResponseError> response = Response.unauthorized();
+                    Response<ResponseError> response = Response.unauthenticated();
                     handle(httpServletResponse, response, e);
                 })
                 .accessDeniedHandler((httpServletRequest, httpServletResponse, e) -> {
-                    Response<ResponseError> response = Response.forbidden();
+                    Response<ResponseError> response = Response.unauthorized();
                     handle(httpServletResponse, response, e);
                 })
                 .and()
@@ -56,15 +58,16 @@ public class SecurityConfiguration
         httpSecurity.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
     }
 
-    private void handle(HttpServletResponse httpServletResponse,
-                        Response<ResponseError> response,
-                        Exception exception) throws IOException {
-        ResponseError error = ResponseError.builder()
-                .message(response.getStatus().getReasonPhrase())
-                .details(exception.getMessage())
+    private void handle(HttpServletResponse servletResponse, Response<ResponseError> response, Exception exception)
+            throws IOException {
+        // TODO: pass message as a parameter and send in response
+        ResponseError error = ResponseError
+                .builder()
+                .message(response.getStatus().getMessage())
+                .errors(exception.getMessage())
                 .build();
         response.setData(error);
-        OutputStream out = httpServletResponse.getOutputStream();
+        OutputStream out = servletResponse.getOutputStream();
         ObjectMapper mapper = new ObjectMapper();
         mapper.writeValue(out, response);
         out.flush();

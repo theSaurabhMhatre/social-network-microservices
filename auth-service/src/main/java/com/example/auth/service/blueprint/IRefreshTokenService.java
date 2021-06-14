@@ -7,7 +7,7 @@ public interface IRefreshTokenService {
 
     RefreshTokenDto generateRefreshToken(AccountDto accountDto);
 
-    RefreshTokenDto findByToken(String token) throws Exception;
+    RefreshTokenDto findByToken(String token);
 
     void deleteByAccount(AccountDto accountDto);
 
