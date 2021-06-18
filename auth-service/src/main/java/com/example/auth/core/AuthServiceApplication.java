@@ -18,7 +18,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
         "com.example.persistence.*"})
 @ComponentScan(basePackages = {
         "com.example.auth.*",
-        "com.example.data.component.*",
         "com.example.persistence.*",
         "com.example.exception.*"})
 @EnableJpaRepositories(basePackages = {

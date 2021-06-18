@@ -1,11 +1,11 @@
 package com.example.user.config.filter;
 
-import com.example.data.component.utility.MessageUtils;
-import com.example.data.model.dto.auth.AccountDto;
-import com.example.data.model.dto.auth.RoleDto;
-import com.example.data.model.response.Response;
-import com.example.data.model.response.ResponseError;
-import com.example.data.utility.ConversionUtils;
+import com.example.generic.model.dto.auth.AccountDto;
+import com.example.generic.model.dto.auth.RoleDto;
+import com.example.generic.model.response.Response;
+import com.example.generic.model.response.ResponseError;
+import com.example.generic.utility.ConversionUtils;
+import com.example.user.utility.MessageUtils;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
@@ -29,9 +29,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import static com.example.data.model.constant.AuthConstants.ACCOUNT_DATA;
-import static com.example.data.model.constant.AuthConstants.AUTHORIZATION_HEADER;
-import static com.example.data.model.constant.AuthConstants.MASKED_PASSWORD;
+import static com.example.generic.model.constant.AuthConstants.ACCOUNT_DATA;
+import static com.example.generic.model.constant.AuthConstants.AUTHORIZATION_HEADER;
+import static com.example.generic.model.constant.AuthConstants.MASKED_PASSWORD;
 
 @Component
 public class JWTFilter

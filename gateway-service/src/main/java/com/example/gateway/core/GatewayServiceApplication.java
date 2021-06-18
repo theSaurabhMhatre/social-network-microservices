@@ -19,7 +19,6 @@ import org.springframework.web.client.RestTemplate;
         "com.example.gateway.*"})
 @ComponentScan(basePackages = {
         "com.example.gateway.*",
-        "com.example.data.component.*",
         "com.example.exception.*"})
 public class GatewayServiceApplication {
 

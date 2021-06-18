@@ -1,6 +1,6 @@
 package com.example.auth.service.blueprint;
 
-import com.example.data.model.dto.auth.RoleDto;
+import com.example.generic.model.dto.auth.RoleDto;
 
 public interface IRoleService {
 

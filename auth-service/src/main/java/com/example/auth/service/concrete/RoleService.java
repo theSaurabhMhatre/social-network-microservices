@@ -4,10 +4,10 @@ import com.example.auth.model.constant.ERole;
 import com.example.auth.model.mapper.RoleMapper;
 import com.example.auth.repository.RoleRepository;
 import com.example.auth.service.blueprint.IRoleService;
-import com.example.data.component.utility.MessageUtils;
-import com.example.data.model.constant.AuthConstants;
-import com.example.data.model.dto.auth.RoleDto;
+import com.example.auth.utility.MessageUtils;
 import com.example.exception.hierarchy.FetchException;
+import com.example.generic.model.constant.AuthConstants;
+import com.example.generic.model.dto.auth.RoleDto;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;

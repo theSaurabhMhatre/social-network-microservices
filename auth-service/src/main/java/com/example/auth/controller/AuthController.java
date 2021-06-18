@@ -2,9 +2,9 @@ package com.example.auth.controller;
 
 import com.example.auth.service.blueprint.IAuthService;
 import com.example.auth.service.concrete.AuthService;
-import com.example.data.model.dto.auth.AccountDto;
-import com.example.data.model.dto.auth.TokenPairDto;
-import com.example.data.model.response.Response;
+import com.example.generic.model.dto.auth.AccountDto;
+import com.example.generic.model.dto.auth.TokenPairDto;
+import com.example.generic.model.response.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;

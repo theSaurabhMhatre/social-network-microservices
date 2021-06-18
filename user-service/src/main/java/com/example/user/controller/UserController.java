@@ -1,7 +1,7 @@
 package com.example.user.controller;
 
-import com.example.data.model.dto.auth.AccountDto;
-import com.example.data.model.response.Response;
+import com.example.generic.model.dto.auth.AccountDto;
+import com.example.generic.model.response.Response;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;

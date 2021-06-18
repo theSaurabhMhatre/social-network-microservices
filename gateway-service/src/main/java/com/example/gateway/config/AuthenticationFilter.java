@@ -1,11 +1,11 @@
 package com.example.gateway.config;
 
-import com.example.data.component.utility.MessageUtils;
-import com.example.data.model.dto.auth.AccountDto;
-import com.example.data.model.response.Response;
-import com.example.data.model.response.Response.Status;
-import com.example.data.model.response.ResponseError;
-import com.example.data.utility.ConversionUtils;
+import com.example.gateway.utility.MessageUtils;
+import com.example.generic.model.dto.auth.AccountDto;
+import com.example.generic.model.response.Response;
+import com.example.generic.model.response.Response.Status;
+import com.example.generic.model.response.ResponseError;
+import com.example.generic.utility.ConversionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.gateway.filter.GatewayFilter;
 import org.springframework.cloud.gateway.filter.factory.AbstractGatewayFilterFactory;
@@ -26,9 +26,9 @@ import reactor.core.publisher.Mono;
 import java.util.List;
 import java.util.Map;
 
-import static com.example.data.model.constant.AuthConstants.ACCOUNT_DATA;
-import static com.example.data.model.constant.AuthConstants.AUTHORIZATION_HEADER;
-import static com.example.data.model.constant.AuthConstants.AUTH_REALM;
+import static com.example.generic.model.constant.AuthConstants.ACCOUNT_DATA;
+import static com.example.generic.model.constant.AuthConstants.AUTHORIZATION_HEADER;
+import static com.example.generic.model.constant.AuthConstants.AUTH_REALM;
 
 @Component
 @SuppressWarnings("unchecked")

@@ -1,7 +1,7 @@
 package com.example.auth.service.blueprint;
 
-import com.example.data.model.dto.auth.AccountDto;
-import com.example.data.model.dto.auth.RefreshTokenDto;
+import com.example.generic.model.dto.auth.AccountDto;
+import com.example.generic.model.dto.auth.RefreshTokenDto;
 
 public interface IRefreshTokenService {
 

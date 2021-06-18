@@ -7,14 +7,14 @@ import com.example.auth.service.blueprint.IAuthService;
 import com.example.auth.service.blueprint.IRefreshTokenService;
 import com.example.auth.service.blueprint.IRoleService;
 import com.example.auth.utility.JWTUtils;
-import com.example.data.component.utility.MessageUtils;
-import com.example.data.model.dto.auth.AccountDto;
-import com.example.data.model.dto.auth.RefreshTokenDto;
-import com.example.data.model.dto.auth.TokenDto;
-import com.example.data.model.dto.auth.TokenPairDto;
+import com.example.auth.utility.MessageUtils;
 import com.example.exception.hierarchy.UpsertException;
 import com.example.exception.hierarchy.ValidationException;
 import com.example.functional.result.Result;
+import com.example.generic.model.dto.auth.AccountDto;
+import com.example.generic.model.dto.auth.RefreshTokenDto;
+import com.example.generic.model.dto.auth.TokenDto;
+import com.example.generic.model.dto.auth.TokenPairDto;
 import io.jsonwebtoken.ExpiredJwtException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -25,8 +25,8 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
-import static com.example.data.model.constant.AuthConstants.Claims.ACCOUNT_ID;
-import static com.example.data.model.constant.AuthConstants.Claims.REMOTE_ADDR;
+import static com.example.generic.model.constant.AuthConstants.Claims.ACCOUNT_ID;
+import static com.example.generic.model.constant.AuthConstants.Claims.REMOTE_ADDR;
 
 @Service
 @Transactional

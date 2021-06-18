@@ -1,7 +1,7 @@
 package com.example.auth.model.mapper;
 
 import com.example.auth.model.entity.RefreshToken;
-import com.example.data.model.dto.auth.RefreshTokenDto;
+import com.example.generic.model.dto.auth.RefreshTokenDto;
 
 public class RefreshTokenMapper {
 

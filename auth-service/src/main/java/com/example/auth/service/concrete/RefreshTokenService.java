@@ -5,11 +5,11 @@ import com.example.auth.model.mapper.AccountMapper;
 import com.example.auth.model.mapper.RefreshTokenMapper;
 import com.example.auth.repository.RefreshTokenRepository;
 import com.example.auth.service.blueprint.IRefreshTokenService;
-import com.example.data.component.utility.MessageUtils;
-import com.example.data.model.dto.auth.AccountDto;
-import com.example.data.model.dto.auth.RefreshTokenDto;
+import com.example.auth.utility.MessageUtils;
 import com.example.exception.hierarchy.UpsertException;
 import com.example.exception.hierarchy.ValidationException;
+import com.example.generic.model.dto.auth.AccountDto;
+import com.example.generic.model.dto.auth.RefreshTokenDto;
 import org.apache.commons.lang.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -18,8 +18,8 @@ import javax.transaction.Transactional;
 import java.util.Date;
 import java.util.Optional;
 
-import static com.example.data.model.constant.AuthConstants.REFRESH_TOKEN_EXPIRATION;
-import static com.example.data.model.constant.AuthConstants.REFRESH_TOKEN_SIZE;
+import static com.example.generic.model.constant.AuthConstants.REFRESH_TOKEN_EXPIRATION;
+import static com.example.generic.model.constant.AuthConstants.REFRESH_TOKEN_SIZE;
 
 @Service
 @Transactional

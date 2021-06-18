@@ -1,7 +1,7 @@
 package com.example.auth.model.mapper;
 
 import com.example.auth.model.entity.Account;
-import com.example.data.model.dto.auth.AccountDto;
+import com.example.generic.model.dto.auth.AccountDto;
 
 import java.util.stream.Collectors;
 

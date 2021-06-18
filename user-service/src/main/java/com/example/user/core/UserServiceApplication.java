@@ -16,7 +16,6 @@ import org.springframework.context.support.ReloadableResourceBundleMessageSource
         "com.example.persistence.*"})
 @ComponentScan(basePackages = {
         "com.example.user.*",
-        "com.example.data.component.*",
         "com.example.persistence.*",
         "com.example.exception.*"})
 public class UserServiceApplication {

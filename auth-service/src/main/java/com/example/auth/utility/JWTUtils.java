@@ -1,7 +1,7 @@
 package com.example.auth.utility;
 
-import com.example.data.model.dto.auth.AccountDto;
-import com.example.data.model.dto.auth.TokenDto;
+import com.example.generic.model.dto.auth.AccountDto;
+import com.example.generic.model.dto.auth.TokenDto;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
@@ -15,9 +15,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
-import static com.example.data.model.constant.AuthConstants.ACCESS_TOKEN_EXPIRATION;
-import static com.example.data.model.constant.AuthConstants.Claims.ACCOUNT_ID;
-import static com.example.data.model.constant.AuthConstants.Claims.REMOTE_ADDR;
+import static com.example.generic.model.constant.AuthConstants.ACCESS_TOKEN_EXPIRATION;
+import static com.example.generic.model.constant.AuthConstants.Claims.ACCOUNT_ID;
+import static com.example.generic.model.constant.AuthConstants.Claims.REMOTE_ADDR;
 
 @Component
 public class JWTUtils

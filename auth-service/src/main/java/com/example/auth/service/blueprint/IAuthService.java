@@ -1,7 +1,7 @@
 package com.example.auth.service.blueprint;
 
-import com.example.data.model.dto.auth.AccountDto;
-import com.example.data.model.dto.auth.TokenPairDto;
+import com.example.generic.model.dto.auth.AccountDto;
+import com.example.generic.model.dto.auth.TokenPairDto;
 
 public interface IAuthService {
 

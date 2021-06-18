@@ -1,7 +1,7 @@
 package com.example.user.config.security;
 
-import com.example.data.model.response.Response;
-import com.example.data.model.response.ResponseError;
+import com.example.generic.model.response.Response;
+import com.example.generic.model.response.ResponseError;
 import com.example.user.config.filter.JWTFilter;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +16,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.OutputStream;
 
-import static com.example.data.model.constant.AuthConstants.ALLOWED_ROLE;
+import static com.example.generic.model.constant.AuthConstants.ALLOWED_ROLE;
 
 @Configuration
 @EnableWebSecurity

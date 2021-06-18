@@ -2,7 +2,7 @@ package com.example.auth.model.mapper;
 
 import com.example.auth.model.constant.ERole;
 import com.example.auth.model.entity.Role;
-import com.example.data.model.dto.auth.RoleDto;
+import com.example.generic.model.dto.auth.RoleDto;
 
 public class RoleMapper {
 
