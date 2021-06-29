@@ -1,20 +1,27 @@
 package com.example.gateway.core;
 
+import feign.codec.Decoder;
+import feign.codec.Encoder;
+import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
-import org.springframework.cloud.client.loadbalancer.LoadBalanced;
+import org.springframework.boot.autoconfigure.http.HttpMessageConverters;
 import org.springframework.cloud.netflix.eureka.EnableEurekaClient;
 import org.springframework.cloud.netflix.hystrix.EnableHystrix;
+import org.springframework.cloud.openfeign.EnableFeignClients;
+import org.springframework.cloud.openfeign.support.SpringDecoder;
+import org.springframework.cloud.openfeign.support.SpringEncoder;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
-import org.springframework.web.client.RestTemplate;
 
 @EnableHystrix
 @EnableEurekaClient
 @SpringBootApplication
+@EnableFeignClients(basePackages =
+        {"com.example.gateway.*"})
 @EntityScan(basePackages = {
         "com.example.gateway.*"})
 @ComponentScan(basePackages = {
@@ -22,10 +29,20 @@ import org.springframework.web.client.RestTemplate;
         "com.example.exception.*"})
 public class GatewayServiceApplication {
 
+    private final ObjectFactory<HttpMessageConverters> messageConverters;
+
+    public GatewayServiceApplication() {
+        this.messageConverters = HttpMessageConverters::new;
+    }
+
     @Bean
-    @LoadBalanced
-    public RestTemplate restTemplate() {
-        return new RestTemplate();
+    Encoder feignEncoder() {
+        return new SpringEncoder(messageConverters);
+    }
+
+    @Bean
+    Decoder feignDecoder() {
+        return new SpringDecoder(messageConverters);
     }
 
     @Bean
