@@ -4,3 +4,13 @@ server:
 spring:
   application:
     name: USER-SERVICE
+
+feign:
+  hystrix:
+    enabled: true
+  client:
+    config:
+      default:
+        connectTimeout: 2000
+        readTimeout: 2000
+        loggerLevel: full

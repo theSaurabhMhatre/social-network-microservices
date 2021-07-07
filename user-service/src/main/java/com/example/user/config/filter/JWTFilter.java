@@ -12,6 +12,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ObjectUtils;
@@ -60,7 +61,7 @@ public class JWTFilter
 
     private UsernamePasswordAuthenticationToken getAuthenticationToken(String credentials, AccountDto accountDto) {
         List<GrantedAuthority> roles = getUserAuthorities(accountDto.getRoles());
-        var userDetails = new User(accountDto.getId(), MASKED_PASSWORD, roles);
+        UserDetails userDetails = new User(accountDto.getId(), MASKED_PASSWORD, roles);
         return new UsernamePasswordAuthenticationToken(userDetails, credentials, userDetails.getAuthorities());
     }
 
