@@ -1,5 +1,5 @@
 server:
-  port: 9296
+  port: ${CONFIG_SERVICE_PORT:9296}
 
 spring:
   application:
@@ -9,4 +9,4 @@ spring:
       server:
         git:
           clone-on-start: true
-          uri: ${CONFIG_REPO_URL}
+          uri: ${CONFIG_REPO_URL:file:///D:/github-repos/config-server}

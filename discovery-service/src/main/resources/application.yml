@@ -1,5 +1,5 @@
 server:
-  port: 8761
+  port: ${DISCOVERY_SERVICE_PORT:8761}
 
 eureka:
   client:

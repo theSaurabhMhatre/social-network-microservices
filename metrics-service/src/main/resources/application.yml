@@ -1,5 +1,5 @@
 server:
-  port: 9294
+  port: ${METRICS_SERVICE_PORT:9294}
 
 spring:
   application:

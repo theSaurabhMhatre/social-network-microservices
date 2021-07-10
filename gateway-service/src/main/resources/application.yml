@@ -1,5 +1,5 @@
 server:
-  port: 9191
+  port: ${GATEWAY_SERVICE_PORT:9191}
 
 spring:
   application:
@@ -44,7 +44,7 @@ hystrix:
       execution:
         isolation:
           thread:
-            timeoutInMilliseconds: 4000
+            timeoutInMilliseconds: ${FALLBACK_TIMEOUT:4000}
 
 management:
   endpoints:
