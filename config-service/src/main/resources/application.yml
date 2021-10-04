@@ -8,5 +8,16 @@ spring:
     config:
       server:
         git:
+          default-label: main
           clone-on-start: true
-          uri: ${CONFIG_REPO_URL:file:///D:/github-repos/config-server}
+          uri: ${CONFIG_REPO_URL}
+
+eureka:
+  instance:
+    hostname: ${DISCOVERY_SERVICE_URL:localhost}
+    preferIpAddress: true
+  client:
+    registerWithEureka: true
+    fetchRegistry: true
+    serviceUrl:
+      defaultZone: http://${DISCOVERY_SERVICE_URL:localhost}:8761/eureka

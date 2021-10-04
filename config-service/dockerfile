@@ -1,0 +1,9 @@
+FROM adoptopenjdk/openjdk11:alpine
+RUN apk update
+RUN apk add bash curl
+RUN mkdir /service
+WORKDIR /service
+COPY target/config-service-0.0.1.jar config-service.jar
+COPY init.sh init.sh
+RUN chmod +x init.sh
+ENTRYPOINT ["./init.sh", "config-service", "false", "discovery-service:8761"]

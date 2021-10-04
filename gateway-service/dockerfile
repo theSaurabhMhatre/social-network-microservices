@@ -1,0 +1,9 @@
+FROM adoptopenjdk/openjdk11:alpine
+RUN apk update
+RUN apk add bash curl
+RUN mkdir /service
+WORKDIR /service
+COPY target/gateway-service-0.0.1.jar gateway-service.jar
+COPY init.sh init.sh
+RUN chmod +x init.sh
+ENTRYPOINT ["./init.sh", "gateway-service", "false", "discovery-service:8761", "config-service:9296"]

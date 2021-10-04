@@ -1,0 +1,129 @@
+version: "3.8"
+
+x-database-service:
+  &database-config
+    DB_SERVER_URL: database-service
+
+x-config-service:
+  &cloud-config
+    CONFIG_SERVICE_URL: config-service
+
+networks:
+  sn-network:
+    name: sn-network
+    driver: bridge
+
+volumes:
+  sn-database:
+    name: sn-database
+    driver: local
+
+services:
+  database-service:
+    image: postgres:alpine
+    restart: unless-stopped
+    networks:
+      - sn-network
+    volumes:
+      - sn-database:/var/lib/postgresql/data
+      - ./init-db.sql:/docker-entrypoint-initdb.d/init.sql
+    container_name: database-service
+    environment:
+      POSTGRES_USER: "postgres"
+      POSTGRES_PASSWORD: "postgres"
+
+  discovery-service:
+    image: discovery-service:latest
+    ports:
+      - 8761:8761
+    networks:
+      - sn-network
+    container_name: discovery-service
+
+  config-service:
+    image: config-service:latest
+    ports:
+      - 9296:9296
+    networks:
+      - sn-network
+    depends_on:
+      - discovery-service
+    container_name: config-service
+    environment:
+      DISCOVERY_SERVICE_URL: discovery-service
+      CONFIG_REPO_URL: https://github.com/theBaracudaGuy/config-server
+
+  gateway-service:
+    image: gateway-service:latest
+    ports:
+      - 9191:9191
+      - 6002:6002
+    networks:
+      - sn-network
+    depends_on:
+      - discovery-service
+      - config-service
+    container_name: gateway-service
+    environment:
+      <<: *cloud-config
+
+  auth-service:
+    image: auth-service:latest
+    networks:
+      - sn-network
+    depends_on:
+      - discovery-service
+      - config-service
+      - gateway-service
+      - database-service
+    container_name: auth-service
+    environment:
+      JWT_SECRET: 22x0c5r5rk5vpxnl720u10qa2
+      <<: *cloud-config
+      <<: *database-config
+
+  user-service:
+    image: user-service:latest
+    ports:
+      - 9000:9000
+      - 6001:6001
+    networks:
+      - sn-network
+    depends_on:
+      - discovery-service
+      - config-service
+      - gateway-service
+      - database-service
+    container_name: user-service
+    environment:
+      <<: *cloud-config
+      <<: *database-config
+
+  post-service:
+    image: post-service:latest
+    ports:
+      - 9001:9001
+    networks:
+      - sn-network
+    depends_on:
+      - discovery-service
+      - config-service
+      - gateway-service
+      - database-service
+    container_name: post-service
+    environment:
+      <<: *cloud-config
+      <<: *database-config
+
+  metrics-service:
+    image: metrics-service:latest
+    ports:
+      - 9294:9294
+    networks:
+      - sn-network
+    depends_on:
+      - discovery-service
+      - config-service
+    container_name: metrics-service
+    environment:
+      <<: *cloud-config

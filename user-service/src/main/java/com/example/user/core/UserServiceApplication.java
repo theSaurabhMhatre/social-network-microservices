@@ -26,7 +26,7 @@ public class UserServiceApplication {
     @Bean
     public MessageSource messageSource() {
         var messageSource = new ReloadableResourceBundleMessageSource();
-        messageSource.setBasename("classpath:/messages/error");
+        messageSource.setBasename("classpath:messages/error");
         messageSource.setDefaultEncoding("UTF-8");
         return messageSource;
     }

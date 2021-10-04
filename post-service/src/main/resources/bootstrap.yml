@@ -1,5 +1,7 @@
 spring:
   cloud:
     config:
+      label: main
       enabled: true
-      uri: ${CONFIG_SERVER_URL:http://localhost:9296}
+      uri: http://${CONFIG_SERVICE_URL:localhost}:9296
+      name: post-service-config

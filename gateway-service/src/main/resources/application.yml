@@ -50,7 +50,7 @@ management:
   endpoints:
     web:
       exposure:
-        include: hystrix.stream
+        include: hystrix.stream, health
 
 open:
   routes: /v1/auth/login, /v1/auth/register, /v1/auth/refresh
