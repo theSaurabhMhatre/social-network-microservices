@@ -8,6 +8,10 @@ x-config-service:
   &cloud-config
     CONFIG_SERVICE_URL: config-service
 
+x-generic-properties:
+  &generic-properties
+    DEBUG_FLAG: ${DEBUG_FLAG:-false}
+
 networks:
   sn-network:
     name: sn-network
@@ -29,35 +33,42 @@ services:
       - ./init-db.sql:/docker-entrypoint-initdb.d/init.sql
     container_name: database-service
     environment:
-      POSTGRES_USER: "postgres"
-      POSTGRES_PASSWORD: "postgres"
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PSWD}
 
   discovery-service:
     image: discovery-service:latest
     ports:
       - 8761:8761
+      - 7671:7671
     networks:
       - sn-network
     container_name: discovery-service
+    environment:
+      DEBUG_PORT: 7671
+      <<: *generic-properties
 
   config-service:
     image: config-service:latest
     ports:
       - 9296:9296
+      - 7276:7276
     networks:
       - sn-network
     depends_on:
       - discovery-service
     container_name: config-service
     environment:
+      DEBUG_PORT: 7276
       DISCOVERY_SERVICE_URL: discovery-service
-      CONFIG_REPO_URL: https://github.com/theBaracudaGuy/config-server
+      CONFIG_REPO_URL: ${CONFIG_REPO_URL}
+      <<: *generic-properties
 
   gateway-service:
     image: gateway-service:latest
     ports:
       - 9191:9191
-      - 6002:6002
+      - 7171:7171
     networks:
       - sn-network
     depends_on:
@@ -65,10 +76,14 @@ services:
       - config-service
     container_name: gateway-service
     environment:
+      DEBUG_PORT: 7171
       <<: *cloud-config
+      <<: *generic-properties
 
   auth-service:
     image: auth-service:latest
+    ports:
+      - 7000:7000
     networks:
       - sn-network
     depends_on:
@@ -78,15 +93,16 @@ services:
       - database-service
     container_name: auth-service
     environment:
-      JWT_SECRET: 22x0c5r5rk5vpxnl720u10qa2
+      DEBUG_PORT: 7000
+      JWT_SECRET_KEY: ${JWT_SECRET_KEY}
       <<: *cloud-config
       <<: *database-config
+      <<: *generic-properties
 
   user-service:
     image: user-service:latest
     ports:
-      - 9000:9000
-      - 6001:6001
+      - 7001:7001
     networks:
       - sn-network
     depends_on:
@@ -96,13 +112,15 @@ services:
       - database-service
     container_name: user-service
     environment:
+      DEBUG_PORT: 7001
       <<: *cloud-config
       <<: *database-config
+      <<: *generic-properties
 
   post-service:
     image: post-service:latest
     ports:
-      - 9001:9001
+      - 7002:7002
     networks:
       - sn-network
     depends_on:
@@ -112,13 +130,16 @@ services:
       - database-service
     container_name: post-service
     environment:
+      DEBUG_PORT: 7002
       <<: *cloud-config
       <<: *database-config
+      <<: *generic-properties
 
   metrics-service:
     image: metrics-service:latest
     ports:
       - 9294:9294
+      - 7274:7274
     networks:
       - sn-network
     depends_on:
@@ -126,4 +147,6 @@ services:
       - config-service
     container_name: metrics-service
     environment:
+      DEBUG_PORT: 7274
       <<: *cloud-config
+      <<: *generic-properties

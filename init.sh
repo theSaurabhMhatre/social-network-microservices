@@ -2,12 +2,12 @@
 # script to check if dependant services are started
 
 # command line inputs to be specified in the following sequence
-# service-name dbcheck (true/false) dependant-service-host-1 dependant-service-host-2
+# service-name connects-to-db? (true/false) dependant-service-host-1 dependant-service-host-2
 inputs=("$@")
 # upstream services status
 upstream=1
 # database service status
-dbstatus=1
+db_status=1
 # service not started
 down=""
 
@@ -19,7 +19,7 @@ function database() {
   while [ $response -ne 1 ] && [ $retries -gt 0 ]
   do
     echo "database-service not yet started, sleeping for 10 seconds"
-    dbstatus=1
+    db_status=1
     sleep 10
     response=$(curl -I database-service:5432 2>&1 | grep 52 | wc -l)
     ((retries--))
@@ -27,7 +27,7 @@ function database() {
   if [ $response -eq 1 ]
     then
       echo "database-service is up"
-      dbstatus=0
+      db_status=0
     else
       echo "Could not start $1"
       exit 1
@@ -69,12 +69,12 @@ function status() {
 function init() {
   local inputs=("$@")
   local service=${inputs[0]}
-  local dbcheck=${inputs[1]}
+  local db_check=${inputs[1]}
   local hosts=("${inputs[@]:2}")
 
   echo "Attempting to start $service"
 
-  if [ $dbcheck == "true" ]
+  if [ $db_check == "true" ]
     then
       echo "Database status check requested, checking database-service status"
       database $service
@@ -89,10 +89,16 @@ function init() {
     upstream=0
   fi
 
-  if [[ $upstream -eq 0 && ( ( $dbcheck == "true" && $dbstatus -eq 0 ) || $dbcheck == "false" ) ]]
+  if [[ $upstream -eq 0 && ( ( $db_check == "true" && $db_status -eq 0 ) || $db_check == "false" ) ]]
     then
-      echo "Starting $service"
-      java -jar $service.jar
+      if [[ ${DEBUG_FLAG} == "true" ]]
+        then
+          echo "Starting $service in debug mode"
+          java -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:${DEBUG_PORT} -jar $service.jar
+        else
+          echo "Starting $service"
+          java -jar $service.jar
+      fi
     else
       echo "Could not start $service"
   fi
