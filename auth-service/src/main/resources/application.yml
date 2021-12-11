@@ -4,6 +4,11 @@ server:
 spring:
   application:
     name: AUTH-SERVICE
+  zipkin:
+    base-url: http://localhost:9411
+  sleuth:
+    sampler:
+      probability: 1
 
 jwt:
   secret: ${JWT_SECRET_KEY}
