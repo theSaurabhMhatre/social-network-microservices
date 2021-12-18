@@ -7,6 +7,7 @@ x-database-service:
 x-config-service:
   &cloud-config
     CONFIG_SERVICE_URL: config-service
+    ZIPKIN_URL: zipkin-service
 
 x-generic-properties:
   &generic-properties
@@ -150,3 +151,11 @@ services:
       DEBUG_PORT: 7274
       <<: *cloud-config
       <<: *generic-properties
+
+  zipkin-service:
+    image: openzipkin/zipkin:latest
+    ports:
+      - 9411:9411
+    networks:
+      - sn-network
+    container_name: zipkin-service
