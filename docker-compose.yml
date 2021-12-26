@@ -22,6 +22,9 @@ volumes:
   sn-database:
     name: sn-database
     driver: local
+  sn-logs:
+    name: sn-logs
+    driver: local
 
 services:
   database-service:
@@ -87,6 +90,8 @@ services:
       - 7000:7000
     networks:
       - sn-network
+    volumes:
+      - sn-logs:/service/logs
     depends_on:
       - discovery-service
       - config-service
@@ -106,6 +111,8 @@ services:
       - 7001:7001
     networks:
       - sn-network
+    volumes:
+      - sn-logs:/service/logs
     depends_on:
       - discovery-service
       - config-service
@@ -124,6 +131,8 @@ services:
       - 7002:7002
     networks:
       - sn-network
+    volumes:
+      - sn-logs:/service/logs
     depends_on:
       - discovery-service
       - config-service
@@ -159,3 +168,33 @@ services:
     networks:
       - sn-network
     container_name: zipkin-service
+
+  elasticsearch-service:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.16.2
+    ports:
+      - 9200:9200
+      - 9300:9300
+    networks:
+      - sn-network
+    container_name: elasticsearch-service
+    environment:
+      discovery.type: single-node
+
+  logstash-service:
+    image: docker.elastic.co/logstash/logstash:7.16.2
+    networks:
+      - sn-network
+    volumes:
+      - sn-logs:/logs
+      - ./logstash.conf:/usr/share/logstash/pipeline/logstash.conf
+    container_name: logstash-service
+
+  kibana-service:
+    image: docker.elastic.co/kibana/kibana:7.16.2
+    ports:
+      - 5601:5601
+    networks:
+      - sn-network
+    container_name: kibana-service
+    environment:
+      ELASTICSEARCH_HOSTS: http://elasticsearch-service:9200
